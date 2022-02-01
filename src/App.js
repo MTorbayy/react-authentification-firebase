@@ -1,11 +1,20 @@
-import './App.css'
+import {Routes, Route} from "react-router-dom"
+import Home from "./pages/Home"
+import Navbar from "./components/Navbar"
+import SignUpModals from "./components/SignUpModals"
+import SignInModals from "./components/SignInModals"
+
 
 
 function App() {
   return (
     <>
-  <h1 className='display-1'>Bootstrap !</h1>
-  <button className="btn btn-primary">Coucou</button>
+    <SignInModals/>
+    <SignUpModals/>
+    <Navbar/>
+    <Routes>
+      <Route path="/" element={<Home />}/>
+    </Routes>
     </>
   );
 }
