@@ -17,7 +17,7 @@ export default function Private() {
   return (
   <div className='container'>
       <Outlet />
-      {/* Sortie de la route imbriquée */}
+      {/* Sortie de la route imbriquée, ici PrivateHome comme défini dans App.js */}
   </div>
   )
 }

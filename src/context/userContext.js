@@ -12,11 +12,29 @@ export const UserContext = createContext()
 
 export function UserContextProvider(props) {
 
+
+    const signUp = (email, pwd) => createUserWithEmailAndPassword(auth, email, pwd)
+    const signIn = (email, pwd) => signInWithEmailAndPassword(auth, email, pwd)
+
     const [currentUser, setCurrentUser] = useState()
     const [loadingData, setLoadingData] = useState(true)
 
-    const signUp = (email, pwd) => createUserWithEmailAndPassword(auth, email, pwd)
+    useEffect(() => {
 
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setCurrentUser(currentUser)
+            setLoadingData(false)
+        })
+        //Cette fonction joue le rôle d'un observateur
+        //currentUser est retourné par la fonction, et peut être utilisé dans une callback. Il correspond à l'utilisateur connecté.
+
+        //loadingData permet d'attendre que la fonction useEffect ait tourné avant de déclencher le context Provider et d'envoyer les state vers les autres composants
+
+        return unsubscribe
+        //Joue ici le rôle de cleanup function (déconnecte l'utilisateur currentUser). C'est une méthode retournée par la fonction onAuthStateChanged
+
+
+    }, [])
 
     //Modal :
 
@@ -48,8 +66,8 @@ export function UserContextProvider(props) {
 
 
     return (
-        <UserContext.Provider value={{modalState, toggleModals, signUp}}>
-            {props.children}
+        <UserContext.Provider value={{modalState, toggleModals, signUp, currentUser, signIn}}>
+            {!loadingData && props.children}
         </UserContext.Provider>
     )
 }

@@ -1,11 +1,12 @@
 import React, {useContext, useRef, useState} from 'react'
 import {UserContext} from "../context/userContext"
+import {useNavigate} from 'react-router-dom'
 
-export default function SignUpModals() {
+export default function SignInModal() {
 
-    const {modalState, toggleModals, signUp} = useContext(UserContext)
+    const {modalState, toggleModals, signIn} = useContext(UserContext)
 
-    
+    const navigate = useNavigate()
 
     const [validation, setValidation] = useState('')
 
@@ -22,42 +23,26 @@ export default function SignUpModals() {
     const handleForm = async (e) => {
         e.preventDefault()
 
-        //Validation côté front :
-
-        if((inputs.current[1].value.length || inputs.current[2].value.length) < 6) {
-            setValidation("6 characters min")
-            return //Pour sortir de la fonction
-        }
-        else if (inputs.current[1].value !== inputs.current[2].value) {
-            setValidation("Passwords do not match")
-            return
-        }
-
         //inscription d'un nouvel utilisateur :
 
         try {
-            const cred = await signUp(
+            const cred = await signIn(
                 inputs.current[0].value,
                 inputs.current[1].value
             )
+            
             //Quand inscription réussie :
             formRef.current.reset()
             setValidation("")
-            //cred est un objet avec un nouvel utilisateur
 
-            console.log(cred)
-        } catch (err) {
-            //Validation côté serveur : en cas d'erreur (ex deux fois le même user cherche à s'inscrire)
+            //cred est un objet avec un nouvel utilisateur :
+            //console.log(cred)
+            toggleModals("close")
+            navigate("/private/private-home")
 
-            //console.dir(err)
 
-            if(err.code === "auth/invalid-email") {
-                setValidation("Invalid email format ")
-            }
-
-            if(err.code === "auth/email-already-in-use") {
-                setValidation("Email already used ")
-            }
+        } catch {
+            setValidation("Incorrect email and/or password")
         }
     }
 
@@ -68,7 +53,7 @@ export default function SignUpModals() {
 
   return (
   <>
-    {modalState.signUpModal && (
+    {modalState.signInModal && (
     <div className="position-fixed top-0 vw-100 vh-100">
         <div 
         onClick={closeModal}
@@ -82,7 +67,7 @@ export default function SignUpModals() {
 
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">Sign Up</h5>
+                            <h5 className="modal-title">Sign In</h5>
                             <button 
                             onClick={closeModal}
                             className="btn-close"></button>
@@ -94,43 +79,32 @@ export default function SignUpModals() {
                             onSubmit={handleForm}
                             className="sign-up-form">
                                 <div className="mb-3">
-                                    <label htmlFor="signUpEmail"
+                                    <label htmlFor="signInEmail"
                                     className='form-label'>Email address</label>
                                     <input 
                                     ref={addInputs}
                                     type="email" 
                                     name="email"
                                     required 
-                                    id="signUpEmail" 
+                                    id="signInEmail" 
                                     className="form-control" />
                                 </div>
 
                                 <div className="mb-3">
-                                    <label htmlFor="signUpPwd"
+                                    <label htmlFor="signInPwd"
                                     className='form-label'>Password</label>
                                     <input 
                                     ref={addInputs}
                                     type="password" 
                                     name="pwd"
                                     required 
-                                    id="signUpPwd" 
-                                    className="form-control" />
-                                </div>
-
-                                <div className="mb-3">
-                                    <label htmlFor="repeatPwd"
-                                    className='form-label'>Confirm password</label>
-                                    <input 
-                                    ref={addInputs}
-                                    type="password" 
-                                    name="pwd"
-                                    required 
-                                    id="repeatPwd" 
+                                    id="signInPwd" 
                                     className="form-control" />
                                     <p className="text-danger mt-1">{validation}</p>
                                 </div>
 
                                 <button className="btn btn-primary">Submit</button>
+
                             </form>
                         </div> 
                         
